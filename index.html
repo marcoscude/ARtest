@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo AR - Marker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+    <!-- AR.js per A-Frame (marker-based) -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <!-- Script di interazione -->
+    <script src="./js/interactions.js" defer></script>
+
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      #loadingMessage {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        z-index: 10;
+        transition: opacity 0.3s;
+      }
+      #loadingMessage.found {
+        background: rgba(0, 150, 0, 0.8);
+      }
+      #instructions {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255,255,255,0.9);
+        color: #333;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 12px;
+        z-index: 10;
+        max-width: 80%;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="loadingMessage">Inizializzazione AR… inquadra il marker.</div>
+    <div id="instructions">Tocca un elemento per vedere le informazioni</div>
+
+    <a-scene
+      embedded
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;"
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+      id="scene"
+    >
+      <!-- Asset (immagini, video, modelli) -->
+      <a-assets>
+        <img id="img1" src="./assets/img1.jpg" />
+        <video
+          id="video1"
+          src="./assets/video1.mp4"
+          autoplay="true"
+          loop="true"
+          muted="true"
+          playsinline
+          webkit-playsinline
+        ></video>
+        <a-asset-item id="model1" src="./assets/model1.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- Marker -->
+      <a-marker
+        type="pattern"
+        url="./assets/marker.patt"
+        id="marker"
+        emitevents="true"
+      >
+        <!-- Elemento 1: immagine -->
+        <a-plane
+          position="-1 0 0"
+          rotation="-90 0 0"
+          width="1"
+          height="1"
+          src="#img1"
+          class="clickable"
+          show-info-on-click="text: Immagine informativa; color: #FFFFFF;"
+        ></a-plane>
+
+        <!-- Elemento 2: video -->
+        <a-video
+          position="0 0 0"
+          rotation="-90 0 0"
+          width="1.2"
+          height="0.7"
+          src="#video1"
+          class="clickable"
+          show-info-on-click="text: Video di approfondimento; color: #FFFF00;"
+        ></a-video>
+
+        <!-- Elemento 3: modello 3D -->
+        <a-entity
+          position="1 0 0"
+          rotation="-90 0 0"
+          scale="0.3 0.3 0.3"
+          gltf-model="#model1"
+          class="clickable"
+          show-info-on-click="text: Modello 3D del contenuto; color: #00FFAA;"
+        ></a-entity>
+      </a-marker>
+
+      <!-- Camera AR -->
+      <a-entity camera look-controls>
+        <!-- cursore “invisibile” per permettere il click touch -->
+        <a-cursor
+          id="cursor"
+          fuse="false"
+          raycaster="objects: .clickable"
+          material="color: #FFF; opacity: 0;"
+        ></a-cursor>
+      </a-entity>
+
+      <!-- Pannello testo che compare quando clicchi -->
+      <a-entity id="infoPanelContainer" position="0 1.2 -1.5" visible="false">
+        <!-- Background pannello -->
+        <a-plane
+          id="infoPanel"
+          position="0 0 0"
+          width="2"
+          height="0.8"
+          color="#000000"
+          opacity="0.85"
+          material="transparent: true"
+        ></a-plane>
+
+        <!-- Testo principale -->
+        <a-text
+          id="infoText"
+          value=""
+          align="center"
+          width="1.8"
+          position="0 0.1 0.01"
+          color="#FFFFFF"
+          wrap-count="30"
+        ></a-text>
+
+        <!-- Bottone chiudi -->
+        <a-plane
+          id="closeButton"
+          position="0 -0.25 0.01"
+          width="0.6"
+          height="0.2"
+          color="#CC0000"
+          class="clickable"
+        ></a-plane>
+        <a-text
+          value="CHIUDI"
+          align="center"
+          width="1.5"
+          position="0 -0.25 0.02"
+          color="#FFFFFF"
+        ></a-text>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
