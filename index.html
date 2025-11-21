@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <meta charset="utf-8" />
-    <title>Demo AR - Marker</title>
+    <title>ARbiblio - Esperienza Biblioteca Parma</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
     <!-- A-Frame -->
@@ -20,43 +20,192 @@
         overflow: hidden;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
+
+      /* Messaggi UI */
       #loadingMessage {
         position: fixed;
-        top: 10px;
+        top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(0,0,0,0.7);
+        background: rgba(0,0,0,0.8);
         color: white;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-size: 14px;
-        z-index: 10;
-        transition: opacity 0.3s;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 15px;
+        z-index: 100;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       }
       #loadingMessage.found {
-        background: rgba(0, 150, 0, 0.8);
+        background: rgba(0, 150, 0, 0.9);
       }
-      #instructions {
+
+      /* Bottone Avvia Esperienza */
+      #startExperienceBtn {
         position: fixed;
-        bottom: 20px;
+        bottom: 40px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(255,255,255,0.9);
-        color: #333;
-        padding: 10px 16px;
+        background: #CC0000;
+        color: white;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: bold;
+        z-index: 100;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(204, 0, 0, 0.4);
+        transition: all 0.3s;
+        display: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      #startExperienceBtn:active {
+        transform: translateX(-50%) scale(0.95);
+        box-shadow: 0 4px 15px rgba(204, 0, 0, 0.5);
+      }
+
+      /* Pannello Debug XYZ */
+      #debugPanel {
+        position: fixed;
+        top: 80px;
+        right: 10px;
+        background: rgba(0,0,0,0.9);
+        color: white;
+        padding: 15px;
         border-radius: 10px;
-        font-size: 12px;
-        z-index: 10;
-        max-width: 80%;
-        text-align: center;
+        font-size: 11px;
+        z-index: 99;
+        max-width: 280px;
+        display: none;
+      }
+      #debugPanel.active {
+        display: block;
+      }
+      .debug-control {
+        margin: 8px 0;
+      }
+      .debug-control label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: bold;
+        color: #00FFAA;
+      }
+      .debug-control input[type="range"] {
+        width: 100%;
+      }
+      .debug-control .value {
+        color: #FFD700;
+        float: right;
+      }
+      .debug-object {
+        border-top: 1px solid #444;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+      .debug-object:first-child {
+        border-top: none;
+        padding-top: 0;
+        margin-top: 0;
+      }
+      #debugToggle {
+        position: fixed;
+        top: 80px;
+        right: 10px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        border: 1px solid #00FFAA;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        z-index: 100;
+        cursor: pointer;
       }
     </style>
   </head>
 
   <body>
+    <!-- Messaggi di stato -->
     <div id="loadingMessage">Inizializzazione AR… inquadra il marker.</div>
-    <div id="instructions">Tocca un elemento per vedere le informazioni</div>
 
+    <!-- Bottone Avvia Esperienza (appare quando marker trovato) -->
+    <button id="startExperienceBtn">Avvia l'esperienza</button>
+
+    <!-- Toggle Debug Panel -->
+    <button id="debugToggle" style="display: none;">⚙️ Debug</button>
+
+    <!-- Pannello Debug XYZ -->
+    <div id="debugPanel">
+      <h4 style="margin: 0 0 10px 0; color: #FFD700;">🎛️ Posizionamento Oggetti</h4>
+
+      <!-- Biblioteca Sinistra -->
+      <div class="debug-object">
+        <h5 style="margin: 0 0 8px 0;">2.3_Biblioteca (Sinistra)</h5>
+        <div class="debug-control">
+          <label>X: <span class="value" id="obj1-x-val">-1.5</span></label>
+          <input type="range" id="obj1-x" min="-5" max="5" step="0.1" value="-1.5">
+        </div>
+        <div class="debug-control">
+          <label>Y: <span class="value" id="obj1-y-val">0</span></label>
+          <input type="range" id="obj1-y" min="-2" max="2" step="0.1" value="0">
+        </div>
+        <div class="debug-control">
+          <label>Z: <span class="value" id="obj1-z-val">-1</span></label>
+          <input type="range" id="obj1-z" min="-5" max="5" step="0.1" value="-1">
+        </div>
+        <div class="debug-control">
+          <label>Scala: <span class="value" id="obj1-scale-val">0.5</span></label>
+          <input type="range" id="obj1-scale" min="0.1" max="2" step="0.05" value="0.5">
+        </div>
+      </div>
+
+      <!-- Biblioteca Centro -->
+      <div class="debug-object">
+        <h5 style="margin: 0 0 8px 0;">2.4_Biblioteca (Centro)</h5>
+        <div class="debug-control">
+          <label>X: <span class="value" id="obj2-x-val">0</span></label>
+          <input type="range" id="obj2-x" min="-5" max="5" step="0.1" value="0">
+        </div>
+        <div class="debug-control">
+          <label>Y: <span class="value" id="obj2-y-val">0</span></label>
+          <input type="range" id="obj2-y" min="-2" max="2" step="0.1" value="0">
+        </div>
+        <div class="debug-control">
+          <label>Z: <span class="value" id="obj2-z-val">-1.5</span></label>
+          <input type="range" id="obj2-z" min="-5" max="5" step="0.1" value="-1.5">
+        </div>
+        <div class="debug-control">
+          <label>Scala: <span class="value" id="obj2-scale-val">0.5</span></label>
+          <input type="range" id="obj2-scale" min="0.1" max="2" step="0.05" value="0.5">
+        </div>
+      </div>
+
+      <!-- Piani Destra -->
+      <div class="debug-object">
+        <h5 style="margin: 0 0 8px 0;">2.5_PianiParma (Destra)</h5>
+        <div class="debug-control">
+          <label>X: <span class="value" id="obj3-x-val">1.5</span></label>
+          <input type="range" id="obj3-x" min="-5" max="5" step="0.1" value="1.5">
+        </div>
+        <div class="debug-control">
+          <label>Y: <span class="value" id="obj3-y-val">0</span></label>
+          <input type="range" id="obj3-y" min="-2" max="2" step="0.1" value="0">
+        </div>
+        <div class="debug-control">
+          <label>Z: <span class="value" id="obj3-z-val">-1</span></label>
+          <input type="range" id="obj3-z" min="-5" max="5" step="0.1" value="-1">
+        </div>
+        <div class="debug-control">
+          <label>Scala: <span class="value" id="obj3-scale-val">0.5</span></label>
+          <input type="range" id="obj3-scale" min="0.1" max="2" step="0.05" value="0.5">
+        </div>
+      </div>
+
+      <button style="width: 100%; margin-top: 10px; padding: 8px; background: #00FFAA; color: black; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" onclick="saveDebugPositions()">💾 Salva Posizioni</button>
+    </div>
+
+    <!-- Scena A-Frame AR -->
     <a-scene
       embedded
       vr-mode-ui="enabled: false"
@@ -64,19 +213,15 @@
       arjs="sourceType: webcam; debugUIEnabled: false;"
       id="scene"
     >
-      <!-- Asset (immagini, video, modelli) -->
+      <!-- Assets -->
       <a-assets>
-        <img id="img1" src="./assets/img1.jpg" />
-        <video
-          id="video1"
-          src="./assets/video1.mp4"
-          autoplay="true"
-          loop="true"
-          muted="true"
-          playsinline
-          webkit-playsinline
-        ></video>
-        <a-asset-item id="model1" src="./assets/model1.glb"></a-asset-item>
+        <!-- PNG Markernote1 -->
+        <img id="markernote1" src="./assets/Markernote1.png" />
+
+        <!-- Modelli 3D Biblioteche -->
+        <a-asset-item id="model-biblioteca-sx" src="./assets/2.3_Biblioteca.glb"></a-asset-item>
+        <a-asset-item id="model-biblioteca-centro" src="./assets/2.4_BibliotecaParma_2.glb"></a-asset-item>
+        <a-asset-item id="model-piani-dx" src="./assets/2.5_PianiParma.glb"></a-asset-item>
       </a-assets>
 
       <!-- Marker -->
@@ -86,91 +231,53 @@
         id="marker"
         emitevents="true"
       >
-        <!-- Elemento 1: immagine -->
-        <a-plane
-          position="-1 0 0"
+        <!-- PNG Markernote1 - Visibile quando marker trovato, nascosto dopo click bottone -->
+        <a-image
+          id="markerNote"
+          src="#markernote1"
+          position="0 0 0"
           rotation="-90 0 0"
           width="1"
           height="1"
-          src="#img1"
-          class="clickable"
-          show-info-on-click="text: Immagine informativa; color: #FFFFFF;"
-        ></a-plane>
-
-        <!-- Elemento 2: video -->
-        <a-video
-          position="0 0 0"
-          rotation="-90 0 0"
-          width="1.2"
-          height="0.7"
-          src="#video1"
-          class="clickable"
-          show-info-on-click="text: Video di approfondimento; color: #FFFF00;"
-        ></a-video>
-
-        <!-- Elemento 3: modello 3D -->
-        <a-entity
-          position="1 0 0"
-          rotation="-90 0 0"
-          scale="0.3 0.3 0.3"
-          gltf-model="#model1"
-          class="clickable"
-          show-info-on-click="text: Modello 3D del contenuto; color: #00FFAA;"
-        ></a-entity>
+          visible="false"
+        ></a-image>
       </a-marker>
 
       <!-- Camera AR -->
-      <a-entity camera look-controls>
-        <!-- cursore “invisibile” per permettere il click touch -->
-        <a-cursor
-          id="cursor"
-          fuse="false"
-          raycaster="objects: .clickable"
-          material="color: #FFF; opacity: 0;"
-        ></a-cursor>
+      <a-entity id="camera" camera look-controls="enabled: true"></a-entity>
+
+      <!-- Container World-Space per oggetti 3D (ancorato nello spazio dopo click) -->
+      <a-entity id="worldAnchor" visible="false">
+
+        <!-- 2.3_Biblioteca - SINISTRA -->
+        <a-entity
+          id="biblioteca-sx"
+          gltf-model="#model-biblioteca-sx"
+          position="-1.5 0 -1"
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
+        ></a-entity>
+
+        <!-- 2.4_BibliotecaParma_2 - CENTRO (davanti) -->
+        <a-entity
+          id="biblioteca-centro"
+          gltf-model="#model-biblioteca-centro"
+          position="0 0 -1.5"
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
+        ></a-entity>
+
+        <!-- 2.5_PianiParma - DESTRA -->
+        <a-entity
+          id="piani-dx"
+          gltf-model="#model-piani-dx"
+          position="1.5 0 -1"
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
+        ></a-entity>
+
       </a-entity>
 
-      <!-- Pannello testo che compare quando clicchi -->
-      <a-entity id="infoPanelContainer" position="0 1.2 -1.5" visible="false">
-        <!-- Background pannello -->
-        <a-plane
-          id="infoPanel"
-          position="0 0 0"
-          width="2"
-          height="0.8"
-          color="#000000"
-          opacity="0.85"
-          material="transparent: true"
-        ></a-plane>
-
-        <!-- Testo principale -->
-        <a-text
-          id="infoText"
-          value=""
-          align="center"
-          width="1.8"
-          position="0 0.1 0.01"
-          color="#FFFFFF"
-          wrap-count="30"
-        ></a-text>
-
-        <!-- Bottone chiudi -->
-        <a-plane
-          id="closeButton"
-          position="0 -0.25 0.01"
-          width="0.6"
-          height="0.2"
-          color="#CC0000"
-          class="clickable"
-        ></a-plane>
-        <a-text
-          value="CHIUDI"
-          align="center"
-          width="1.5"
-          position="0 -0.25 0.02"
-          color="#FFFFFF"
-        ></a-text>
-      </a-entity>
     </a-scene>
   </body>
 </html>
