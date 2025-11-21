@@ -1,0 +1,178 @@
+================================================================================
+✅ NUOVA ESPERIENZA AR COMPLETATA - PRONTA PER PUSH
+================================================================================
+
+📦 COMMIT CREATO LOCALMENTE:
+Commit ID: e8af606
+Messaggio: "Implementata nuova esperienza AR camera-relative"
+
+File modificati:
+- index.html (575 righe modificate)
+- js/interactions.js (completa riscrittura)
+
+File nuovi:
+- TESTING_GUIDE.md (guida test completa)
+- PUSH_CHANGES.txt (questo file)
+
+================================================================================
+🚀 COME FARE PUSH SU GITHUB
+================================================================================
+
+OPZIONE 1 - Push manuale (se hai token attivo)
+-----------------------------------------------
+Esegui:
+
+    git push origin main
+
+Se richiede credenziali:
+- Username: marcoscude
+- Password: [il tuo Personal Access Token GitHub]
+
+
+OPZIONE 2 - Genera nuovo token e push
+--------------------------------------
+1. Vai su: https://github.com/settings/tokens
+2. Click "Generate new token (classic)"
+3. Scope: ☑️ repo
+4. Copia il token
+
+Poi esegui:
+
+    git push origin main
+
+E usa il token come password.
+
+
+OPZIONE 3 - Dammi il token
+---------------------------
+Se mi dai un token valido, posso pushare io direttamente.
+
+================================================================================
+📋 COSA HO IMPLEMENTATO
+================================================================================
+
+✅ SEQUENZA MARKER → PNG → BOTTONE → ESPERIENZA
+1. Marker rilevato → PNG "Markernote1" appare sul marker
+2. Bottone rosso "AVVIA L'ESPERIENZA" appare in basso
+3. Click bottone → PNG e bottone spariscono
+4. 3 modelli 3D appaiono intorno all'utente:
+   - 2.3_Biblioteca.glb: SINISTRA (-1.5m, 0, -1m)
+   - 2.4_BibliotecaParma_2.glb: CENTRO (0, 0, -1.5m)
+   - 2.5_PianiParma.glb: DESTRA (1.5m, 0, -1m)
+
+✅ OGGETTI FISSI NELLO SPAZIO (camera-relative)
+- Quando clicchi "Avvia esperienza", cattura posizione camera
+- Crea "worldAnchor" in quella posizione
+- Oggetti diventano figli di worldAnchor
+- Puoi muoverti liberamente, oggetti restano fissi
+
+✅ SISTEMA DEBUG XYZ
+- Pannello con slider per posizionamento preciso
+- Attiva con ?debug=true nell'URL
+- Bottone "⚙️ Debug" appare dopo aver avviato esperienza
+- Salvataggio posizioni in localStorage
+
+✅ GESTIONE MARKER LOST
+- Prima di avviare: marker perso → tutto scompare
+- Dopo avviato: marker perso → oggetti restano fissi
+
+================================================================================
+🧪 COME TESTARE
+================================================================================
+
+1. Dopo push, Vercel rebuilda automaticamente (30 sec)
+
+2. Apri URL Vercel da smartphone Android
+
+3. Sequenza test:
+   - Inquadra marker
+   - Vedi PNG Markernote1 sul marker
+   - Vedi bottone rosso in basso
+   - Click bottone
+   - PNG e bottone spariscono
+   - 3 modelli 3D appaiono intorno a te
+   - Muoviti liberamente, oggetti restano fissi
+
+4. Test debug:
+   - Apri URL con ?debug=true
+   - Usa slider per regolare posizioni
+   - Salva posizioni trovate
+
+5. Vedi TESTING_GUIDE.md per checklist completa
+
+================================================================================
+⚙️ CONFIGURAZIONE CORRENTE
+================================================================================
+
+Posizioni Default Oggetti (relative a camera):
+
+| Oggetto                  | X    | Y  | Z    | Scala |
+|--------------------------|------|----|----- |-------|
+| 2.3_Biblioteca (SX)      | -1.5 | 0  | -1   | 0.5   |
+| 2.4_Biblioteca (Centro)  | 0    | 0  | -1.5 | 0.5   |
+| 2.5_PianiParma (DX)      | 1.5  | 0  | -1   | 0.5   |
+
+Sistema coordinate:
+- X: negativo = sinistra, positivo = destra
+- Y: negativo = sotto, positivo = sopra
+- Z: negativo = avanti, positivo = dietro
+
+================================================================================
+📊 TECNOLOGIA UTILIZZATA
+================================================================================
+
+✅ Approccio: AR.js camera-relative
+✅ Pro: Funziona ovunque, compatibile Android, movimento 1-1.5m ideale
+⚠️ Contro: Drift oltre 2m, no persistenza marker-less
+
+Perfetto per:
+- Ambiente interno biblioteca
+- Movimento limitato (1-1.5m come specificato)
+- Prototipo rapido testabile
+
+Limitazioni:
+- Drift leggero dopo 2-3 min movimento continuo
+- Serve marker visibile per inizializzare
+- Precisione diminuisce oltre 2m
+
+================================================================================
+🔄 AGGIORNAMENTI FUTURI (se necessario)
+================================================================================
+
+Se il test rivela problemi di stabilità:
+1. Posso ridurre drift con algoritmi di smoothing
+2. Posso passare a WebXR per world-tracking vero
+3. Posso implementare marker sempre visibile come fallback
+
+Ma per ora testiamo questa soluzione camera-relative!
+
+================================================================================
+📞 PROSSIMI PASSI
+================================================================================
+
+1. ✅ Fai push su GitHub (comandi sopra)
+2. ⏱️ Attendi rebuild Vercel (30 secondi)
+3. 📱 Testa da smartphone Android
+4. 📝 Annotami feedback:
+   - Posizioni oggetti ok?
+   - Stabilità movimento?
+   - Dimensioni oggetti?
+   - Performance caricamento?
+
+5. 🎛️ Se posizioni da modificare, usa debug panel:
+   - Apri con ?debug=true
+   - Regola slider
+   - Salva posizioni
+   - Dammi coordinate finali per aggiornarle nel codice
+
+================================================================================
+✅ TUTTO PRONTO!
+================================================================================
+
+File locale aggiornati, commit creato, documentazione completa.
+Ora serve solo push su GitHub e test su Vercel!
+
+Vuoi che pushiamo insieme o fai tu?
+Se mi dai token, posso pushare subito.
+
+================================================================================
