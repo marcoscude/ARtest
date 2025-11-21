@@ -143,20 +143,20 @@
       <div class="debug-object">
         <h5 style="margin: 0 0 8px 0;">2.3_Biblioteca (Sinistra)</h5>
         <div class="debug-control">
-          <label>X: <span class="value" id="obj1-x-val">-0.5</span></label>
-          <input type="range" id="obj1-x" min="-3" max="3" step="0.1" value="-0.5">
+          <label>X: <span class="value" id="obj1-x-val">-1</span></label>
+          <input type="range" id="obj1-x" min="-5" max="5" step="0.1" value="-1">
         </div>
         <div class="debug-control">
           <label>Y: <span class="value" id="obj1-y-val">0</span></label>
-          <input type="range" id="obj1-y" min="-2" max="2" step="0.1" value="0">
+          <input type="range" id="obj1-y" min="-3" max="3" step="0.1" value="0">
         </div>
         <div class="debug-control">
-          <label>Z: <span class="value" id="obj1-z-val">-0.5</span></label>
-          <input type="range" id="obj1-z" min="-3" max="3" step="0.1" value="-0.5">
+          <label>Z: <span class="value" id="obj1-z-val">-1</span></label>
+          <input type="range" id="obj1-z" min="-5" max="5" step="0.1" value="-1">
         </div>
         <div class="debug-control">
-          <label>Scala: <span class="value" id="obj1-scale-val">0.005</span></label>
-          <input type="range" id="obj1-scale" min="0.001" max="0.05" step="0.001" value="0.005">
+          <label>Scala: <span class="value" id="obj1-scale-val">1</span></label>
+          <input type="range" id="obj1-scale" min="0.1" max="3" step="0.1" value="1">
         </div>
       </div>
 
@@ -165,19 +165,19 @@
         <h5 style="margin: 0 0 8px 0;">2.4_Biblioteca (Centro)</h5>
         <div class="debug-control">
           <label>X: <span class="value" id="obj2-x-val">0</span></label>
-          <input type="range" id="obj2-x" min="-3" max="3" step="0.1" value="0">
+          <input type="range" id="obj2-x" min="-5" max="5" step="0.1" value="0">
         </div>
         <div class="debug-control">
           <label>Y: <span class="value" id="obj2-y-val">0</span></label>
-          <input type="range" id="obj2-y" min="-2" max="2" step="0.1" value="0">
+          <input type="range" id="obj2-y" min="-3" max="3" step="0.1" value="0">
         </div>
         <div class="debug-control">
-          <label>Z: <span class="value" id="obj2-z-val">-0.7</span></label>
-          <input type="range" id="obj2-z" min="-3" max="3" step="0.1" value="-0.7">
+          <label>Z: <span class="value" id="obj2-z-val">-1.5</span></label>
+          <input type="range" id="obj2-z" min="-5" max="5" step="0.1" value="-1.5">
         </div>
         <div class="debug-control">
-          <label>Scala: <span class="value" id="obj2-scale-val">0.005</span></label>
-          <input type="range" id="obj2-scale" min="0.001" max="0.05" step="0.001" value="0.005">
+          <label>Scala: <span class="value" id="obj2-scale-val">1</span></label>
+          <input type="range" id="obj2-scale" min="0.1" max="3" step="0.1" value="1">
         </div>
       </div>
 
@@ -185,20 +185,20 @@
       <div class="debug-object">
         <h5 style="margin: 0 0 8px 0;">2.5_PianiParma (Destra)</h5>
         <div class="debug-control">
-          <label>X: <span class="value" id="obj3-x-val">0.5</span></label>
-          <input type="range" id="obj3-x" min="-3" max="3" step="0.1" value="0.5">
+          <label>X: <span class="value" id="obj3-x-val">1</span></label>
+          <input type="range" id="obj3-x" min="-5" max="5" step="0.1" value="1">
         </div>
         <div class="debug-control">
           <label>Y: <span class="value" id="obj3-y-val">0</span></label>
-          <input type="range" id="obj3-y" min="-2" max="2" step="0.1" value="0">
+          <input type="range" id="obj3-y" min="-3" max="3" step="0.1" value="0">
         </div>
         <div class="debug-control">
-          <label>Z: <span class="value" id="obj3-z-val">-0.5</span></label>
-          <input type="range" id="obj3-z" min="-3" max="3" step="0.1" value="-0.5">
+          <label>Z: <span class="value" id="obj3-z-val">-1</span></label>
+          <input type="range" id="obj3-z" min="-5" max="5" step="0.1" value="-1">
         </div>
         <div class="debug-control">
-          <label>Scala: <span class="value" id="obj3-scale-val">0.005</span></label>
-          <input type="range" id="obj3-scale" min="0.001" max="0.05" step="0.001" value="0.005">
+          <label>Scala: <span class="value" id="obj3-scale-val">1</span></label>
+          <input type="range" id="obj3-scale" min="0.1" max="3" step="0.1" value="1">
         </div>
       </div>
 
@@ -254,8 +254,8 @@
         <a-entity
           id="biblioteca-sx"
           gltf-model="#model-biblioteca-sx"
-          position="-0.5 0 -0.5"
-          scale="0.005 0.005 0.005"
+          position="-1 0 -1"
+          scale="1 1 1"
           rotation="0 0 0"
         ></a-entity>
 
@@ -263,8 +263,8 @@
         <a-entity
           id="biblioteca-centro"
           gltf-model="#model-biblioteca-centro"
-          position="0 0 -0.7"
-          scale="0.005 0.005 0.005"
+          position="0 0 -1.5"
+          scale="1 1 1"
           rotation="0 0 0"
         ></a-entity>
 
@@ -272,8 +272,8 @@
         <a-entity
           id="piani-dx"
           gltf-model="#model-piani-dx"
-          position="0.5 0 -0.5"
-          scale="0.005 0.005 0.005"
+          position="1 0 -1"
+          scale="1 1 1"
           rotation="0 0 0"
         ></a-entity>
 
