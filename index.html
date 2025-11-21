@@ -213,12 +213,12 @@
       arjs="sourceType: webcam; debugUIEnabled: false;"
       id="scene"
     >
-      <!-- Assets -->
-      <a-assets>
-        <!-- PNG Markernote1 -->
-        <img id="markernote1" src="./assets/Markernote1.png" />
+      <!-- Assets con timeout per caricamento -->
+      <a-assets timeout="30000">
+        <!-- PNG Markernote1 - precaricato -->
+        <img id="markernote1" src="./assets/Markernote1.png" crossorigin="anonymous" />
 
-        <!-- Modelli 3D Biblioteche -->
+        <!-- Modelli 3D Biblioteche - tutti in scala 1:1 -->
         <a-asset-item id="model-biblioteca-sx" src="./assets/2.3_Biblioteca.glb"></a-asset-item>
         <a-asset-item id="model-biblioteca-centro" src="./assets/2.4_BibliotecaParma_2.glb"></a-asset-item>
         <a-asset-item id="model-piani-dx" src="./assets/2.5_PianiParma.glb"></a-asset-item>
@@ -230,22 +230,25 @@
         url="./assets/marker.patt"
         id="marker"
         emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
       >
-        <!-- PNG Markernote1 - Visibile quando marker trovato, nascosto dopo click bottone -->
-        <a-plane
+        <!-- PNG Markernote1 - Ancorato al marker, visibile quando trovato -->
+        <a-image
           id="markerNote"
-          src="./assets/Markernote1.png"
-          position="0 0.5 0"
+          src="#markernote1"
+          position="0 0.01 0"
           rotation="-90 0 0"
-          width="1"
-          height="1.5"
+          width="0.8"
+          height="1"
           visible="false"
-          material="transparent: true; opacity: 1"
-        ></a-plane>
+        ></a-image>
       </a-marker>
 
-      <!-- Camera AR -->
-      <a-entity id="camera" camera look-controls="enabled: true"></a-entity>
+      <!-- Camera AR (senza look-controls per AR) -->
+      <a-entity id="camera" camera></a-entity>
 
       <!-- Container World-Space per oggetti 3D (ancorato nello spazio dopo click) -->
       <a-entity id="worldAnchor" visible="false">

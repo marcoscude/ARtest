@@ -1,0 +1,260 @@
+ion-content.inner::part(scroll) {
+    padding-left: var(--ion-safe-area-left, 0);
+    padding-right: var(--ion-safe-area-right, 0);
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    /* mantiene i tuoi elementi in colonna */
+    height: 100%;
+    /* importante: occupa tutta l'altezza */
+}
+
+.custom-switch {
+    display: flex;
+    align-items: center;
+    background: #aeb2b2;
+    /* grigio sfondo */
+    border-radius: 50px;
+    padding: 5px;
+    justify-content: space-between;
+    width: 70vw;
+
+    &.mini {
+        max-width: 250px;
+        background-color: #fff;
+        margin: 0 auto;
+
+        .switch-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            border-radius: 50px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            ion-icon {
+                font-size: 18px;
+            }
+
+            &.active {
+                background: #DC7A7A;
+                /* viola */
+                color: #fff;
+
+                &:nth-child(2).active {
+                    background: #DC7A7A;
+                    /* blu biblioteca */
+                }
+
+                &:nth-child(3).active {
+                    background: #DC7A7A;
+                    /* verde info */
+                }
+            }
+        }
+    }
+}
+
+
+.center-content {
+    flex: .2;
+    /* occupa lo spazio rimanente */
+    display: flex;
+    justify-content: center;
+    /* centra orizzontalmente */
+    align-items: center;
+    /* centra verticalmente */
+}
+
+.ion-card-content{
+    h1{
+        text-align: center;
+        font-family: Merriweather,Inter;
+        font-weight: 400;
+        font-size: 25px;
+    }
+}
+
+
+.mycenter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+
+  img {
+   max-width: 160px;
+    object-fit: contain;
+  }
+}
+
+.progress-container {
+  width: 80%;
+  max-width: 300px;
+}
+
+.progress-bar {
+  position: relative;
+  height: 25px;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  overflow: hidden;
+  padding:2px;
+}
+
+.progress-fill {
+    background-color: #000;
+  height: 100%;
+  border-radius: 20px 0 0 20px;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+
+  &.tutti {
+    background-color: #000;
+  }
+
+  &.rossi {
+    background: #9F2C2C;
+  }
+
+  &.viola {
+    background: #7044CE;
+  }
+
+  &.azzurri {
+    background: #79A6DC;
+  }
+
+  &.verdi {
+    background: #1AD2B1;
+  }
+}
+
+.progress-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+
+swiper-container {
+  width: 100%;
+  margin-top:20px;
+  margin-bottom:20px;
+}
+
+.swiper-slide-active {
+  transform: scale(1.5);
+  opacity: 1;
+}
+
+swiper-slide {
+  width: 100px; /* dimensione slide */
+  height: 100px;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.5;
+}
+
+
+.slide-content {
+  border-radius: 20px;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  //height: 100%;
+
+  img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border-radius: 15px;
+  }
+}
+
+.summary {
+    .card-container {
+  display: flex;
+  justify-content: center; // Centra la card orizzontalmente
+  align-items: center; // Centra la card verticalmente
+  min-height: 100%; // Occupa tutta l'altezza per centrare
+  padding: 20px;
+}
+
+.data-card {
+  max-width: 450px; // Limita la larghezza massima per non farla espandere troppo
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); // Ombra leggera
+}
+
+.main-layout {
+  display: flex;
+  align-items: center;
+  gap: 10px; // Spazio tra il QR code e i dati
+}
+
+.left-section {
+  flex-shrink: 0; // Impedisce al QR code di restringersi
+}
+
+.qr-placeholder {
+  // Stili per il riquadro nero che simula il QR code
+  width: 120px; 
+  height: 120px; 
+  background-color: black;
+  border-radius: 8px;
+  
+  // Per ricreare il pattern del QR code, potresti usare una vera immagine, 
+  // oppure un CSS complesso che qui ometto per semplicità. 
+  // Se devi solo simularlo, il riquadro nero è sufficiente.
+}
+
+.right-section {
+  flex-grow: 1; // Permette alla sezione dati di occupare lo spazio rimanente
+}
+
+.row {
+  display: flex;
+  justify-content: space-between; // Allinea etichetta a sinistra e valore a destra
+  align-items: baseline;
+  padding: 2px 0;
+  font-size: 1.1rem; // Dimensione del testo
+}
+
+.label {
+  font-weight: 500; // Semi-grassetto
+  color: #333;
+}
+
+.value {
+  font-weight: bold; // Grassetto
+  color: #000;
+  // Assicurati che il numero non vada a capo e sia ben distanziato
+  white-space: nowrap; 
+}
+
+.separator {
+  border: none;
+  height: 1px;
+  background-color: #ccc;
+  margin: 8px 0; // Spazio sopra e sotto la linea
+}
+
+// Stile specifico per le righe dei colori
+.color-row {
+  font-size: 1rem; // Leggermente più piccolo dei totali
+}
+}

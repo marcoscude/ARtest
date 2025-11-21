@@ -1,0 +1,97 @@
+<ion-content [fullscreen]="true" class="ion-padding ar shade arbg position-relative">
+  <div class="grid-container">
+    <div class="section"><!-- Logo e titolo -->
+      <div class="custom-switch mini">
+        <button class="switch-btn active" (click)="switchMenu('fotocamera')">
+          <ion-icon name="camera" [color]="menucolorf"></ion-icon>
+          <span>Fotocamera</span>
+        </button>
+
+        <button class="switch-btn" (click)="switchMenu('raccolta')">
+          <span>Raccolta</span>
+          <ion-icon [color]="menucolor" name="search"></ion-icon>
+        </button>
+      </div>
+    </div>
+    <section class="center-content">
+      <ion-card class="ar shade" [class.d-none]="page==0">
+        <ion-card-header>
+          <ion-card-title></ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div [class.d-none]="page!=1">
+            <h1>Scopri la Realtà Aumentata</h1>
+            <p>E’ la prima volta che utilizzi la Realtà Aumentata della Biblioteca Centrale di Scienze e Tecnologie?
+              Segui
+              questo tutorial e scopri tutti i dettagli</p>
+            <ion-button center fill="solid" color="lighter" size="small" class="btn-tour" shape="round"
+              (click)="page = page+1">Inizia il tour</ion-button>
+            <a class="link-muted">Non mostrare più questo messaggio</a>
+          </div>
+
+          <div [class.d-none]="page!=2">
+            <h1>Marker</h1>
+            <p>Questi sono i marker, all’interno della Biblioteca Centrale ne troverai 32. 15 di questi (quelli rossi),
+              se <b>inquadrati utilizzando l'app</b>, avviano un’esperienza di realtà Aumentata.
+              Gli altri rimandano a pagine dell’app</p>
+            <ion-button center fill="solid" color="lighter" size="small" class="btn-tour" shape="round"
+              (click)="page = page+1">Successivo</ion-button>
+            <a class="link-muted" (click)="page = 0">Chiudi il tour guidato</a>
+          </div>
+
+          <div [class.d-none]="page!=3">
+            <h1>Colori</h1>
+            <p>
+              Troverai Marker di 4 colori:
+            
+            </p>
+            <ul>
+              <li>Rossi: Caccia al tesoro in Realtà Aumentata (15 marker)</li>
+              <li>Viola: Esplora l’edificio (6)</li>
+              <li>Azzurro: Esplora le biblioteche (8)</li>
+              <li>Verde Acqua: Curiosità e info (3)</li>
+            </ul>
+            <ion-button center fill="solid" color="lighter" size="small" class="btn-tour" shape="round"
+              (click)="page = page+1">Successivo</ion-button>
+            <a class="link-muted" (click)="page = 0">Chiudi il tour guidato</a>
+          </div>
+
+          <div [class.d-none]="page!=4">
+            <h1>Modalità: Camera</h1>
+            <p>
+              In questa modalità puoi inquadrare, grazie alla tua fotocamera, i marker che troverai all’interno della Biblioteca.
+            
+            </p>
+            
+            <ion-button center fill="solid" color="lighter" size="small" class="btn-tour" shape="round"
+              (click)="page = page+1">Successivo</ion-button>
+            <a class="link-muted" (click)="page = 0">Chiudi il tour guidato</a>
+          </div>
+
+          <div [class.d-none]="page!=5">
+            <h1>Modalità: Raccolta</h1>
+            <p>
+              Ogni volta che inquadri un marker per la prima volta, l’esperienza di AR viene salvata in questa raccolta.Chi riuscirà a trovare tutti e <b>15 i marker rossi vincerà un premio!</b>
+            
+            </p>
+            
+            <ion-button center fill="solid" color="lighter" size="small" class="btn-tour" shape="round" routerLink="/realta-aumentata/experience"
+              (click)="page = 0">Dai inizio all'esperienza</ion-button>
+            
+          </div>
+          
+          
+
+
+
+
+        </ion-card-content>
+      </ion-card>
+    </section>
+
+
+  </div>
+</ion-content>
+<ion-footer class="ion-padding">
+  <app-footer-menu [selected]="selected"></app-footer-menu>
+</ion-footer>

@@ -1,0 +1,119 @@
+ion-content,
+a-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+a-scene video {
+    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.ar.shade.arbg {
+    --background: none;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url('/assets/img/bgarexp.png') !important;
+        filter: blur(4px); // 👈 livello di sfocatura
+        transform: scale(1.1); // evita bordi visibili
+        z-index: 0;
+        background-size: cover !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+    }
+}
+
+
+
+ion-header {
+    ion-toolbar {
+        --background: transparent;
+
+        // Rimuove il padding predefinito della toolbar. (Soluzione precedente)
+        --padding-start: 0;
+        --padding-end: 0;
+
+        // NUOVO: Rimuove l'ombra (elevazione) su Android e la linea di separazione.
+        --border-width: 0 !important;
+        --box-shadow: none !important;
+
+
+
+        ::part(background) {
+            box-shadow: none !important;
+            border-width: 0 !important;
+        }
+    }
+
+    &.header-md {
+        box-shadow: none !important;
+    }
+}
+
+ion-buttons {
+    // Rimuove il margine/padding predefinito dai contenitori dei pulsanti
+    // (per i bottoni "slot='start'" e "slot='end'")
+    margin: 0;
+    padding: 0;
+
+    // Per l'elemento a sinistra ("AR02"): sposta il contenuto del chip a filo.
+    &[slot="start"] {
+        padding-left: 10px; // Se vuoi un piccolo spazio a sinistra del chip "AR02"
+
+        ion-chip {
+            margin: 0; // Rimuove eventuali margini extra del chip
+        }
+    }
+
+    // Per l'elemento a destra ("X"): sposta il pulsante Chiudi a filo.
+    &[slot="end"] {
+        // Il pulsante stesso deve essere posizionato correttamente.
+        // L'override della dimensione e del bordo è già stato fatto.
+    }
+}
+
+// Stile per il pulsante X per renderlo più visibile e centrato
+ion-button {
+    --color: #ffffff; // Colore bianco
+    --background: rgba(0, 0, 0, 0.4); // Sfondo semitrasparente
+    --border-radius: 50%;
+    width: 40px;
+    height: 40px;
+
+    // Aggiunge un piccolo margine per staccarlo leggermente dal bordo (opzionale)
+    margin-right: 10px;
+}
+
+.fixed {
+    position: fixed;
+}
+
+.AR2_container {
+    .character-wrapper.fixed {
+        left: 0;
+        right: 0;
+        transition: bottom 0.5s ease;
+        bottom: -33vh;
+    }
+
+    
+
+    .character-wrapper.fixed.rotated {
+        left: -450px;
+        bottom: 1102vh;
+        transform: rotate(45deg);
+        transition: bottom 0.5s ease;
+
+    }
+}

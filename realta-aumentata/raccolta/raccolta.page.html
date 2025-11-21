@@ -1,0 +1,111 @@
+<ion-content [fullscreen]="true" class="ion-padding ar shade position-relative" [class]="getSfondo()">
+  <div class="grid-container">
+    <div class="section"><!-- Logo e titolo -->
+      <div class="custom-switch mini">
+        <button class="switch-btn" [class.active]="selectedMini === 'fotocamera'" (click)="switchMenu('fotocamera')">
+          <ion-icon name="camera" [color]="menucolor"></ion-icon>
+          <span>Fotocamera</span>
+        </button>
+
+        <button class="switch-btn" [class.active]="selectedMini === 'raccolta'" (click)="switchMenu('raccolta')">
+          <span>Raccolta</span>
+          <ion-icon [color]="menucolorf" name="search"></ion-icon>
+        </button>
+      </div>
+    </div>
+    <section class="center-content" style="flex-direction:column;">
+      <div class="mycenter-container">
+        <img src="/assets/img/omino.png" style="max-width:160px">
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="progress" [class]="active_marker_codice">
+            <span class="progress-text">{{ progress }}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="mycenter-container ">
+        <swiper-container class="mySwiper" centered-slides="true" #swiperone slides-per-view="auto">
+          <swiper-slide data-marker="tutti">
+              <div class="slide-content">
+                <img src="/assets/img/marker-nero.png" alt="img" />
+              </div>
+          </swiper-slide>
+          <swiper-slide data-marker="rossi">
+              <div class="slide-content">
+                <img src="/assets/img/marker-rosso.png" alt="img" />
+              </div>
+          </swiper-slide>
+          <swiper-slide data-marker="viola">
+              <div class="slide-content">
+                <img src="/assets/img/marker-viola.png" alt="img" />
+              </div>
+          </swiper-slide>
+          <swiper-slide data-marker="azzurri">
+              <div class="slide-content">
+                <img src="/assets/img/marker-azzurro.png" alt="img" />
+              </div>
+          </swiper-slide>
+          <swiper-slide data-marker="verdi"> 
+              <div class="slide-content">
+                <img src="/assets/img/marker-verde.png" alt="img" />
+              </div>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+      <div class="mycenter-container ">
+        <div class="summary">
+          <ion-card class="data-card">
+          <ion-card-content class="ion-padding">
+        
+        <div class="main-layout">
+          
+          <div class="left-section">
+            <div class="qr-placeholder"></div>
+          </div>
+          
+          <div class="right-section">
+            
+            <div class="row">
+              <span class="label">Totali:</span>
+              <span class="value">45</span>
+            </div>
+            <div class="row ion-margin-bottom">
+              <span class="label">Attivati:</span>
+              <span class="value">22</span>
+            </div>
+            
+            <hr class="separator">
+            
+            <div class="row color-row">
+              <span class="label">Rossi</span>
+              <span class="value">4/10</span>
+            </div>
+            <div class="row color-row">
+              <span class="label">Viola</span>
+              <span class="value">2/10</span>
+            </div>
+            <div class="row color-row">
+              <span class="label">Azzurri</span>
+              <span class="value">1/10</span>
+            </div>
+            <div class="row color-row">
+              <span class="label">Verde Acqua</span>
+              <span class="value">3/10</span>
+            </div>
+          </div>
+          
+        </div>
+      </ion-card-content>
+    </ion-card>
+        </div> 
+      </div>
+
+    </section>
+
+
+  </div>
+</ion-content>
+<ion-footer class="ion-padding">
+  <app-footer-menu [selected]="selected"></app-footer-menu>
+</ion-footer>

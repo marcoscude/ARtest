@@ -1,0 +1,102 @@
+ion-content.inner::part(scroll) {
+    padding-left: var(--ion-safe-area-left, 0);
+    padding-right: var(--ion-safe-area-right, 0);
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    /* mantiene i tuoi elementi in colonna */
+    height: 100%;
+    /* importante: occupa tutta l'altezza */
+}
+
+.custom-switch {
+    display: flex;
+    align-items: center;
+    background: #aeb2b2;
+    /* grigio sfondo */
+    border-radius: 50px;
+    padding: 5px;
+    justify-content: space-between;
+    width: 70vw;
+
+    &.mini {
+        max-width: 250px;
+        background-color: #fff;
+        margin: 0 auto;
+
+        .switch-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            border-radius: 50px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            ion-icon {
+                font-size: 18px;
+            }
+
+            &.active {
+                background: #DC7A7A;
+                /* viola */
+                color: #fff;
+
+                &:nth-child(2).active {
+                    background: #DC7A7A;
+                    /* blu biblioteca */
+                }
+
+                &:nth-child(3).active {
+                    background: #DC7A7A;
+                    /* verde info */
+                }
+            }
+        }
+    }
+}
+
+.ar.shade.arbg {
+    --background: none;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url('/assets/img/arbg.jpg') !important;
+        filter: blur(8px); // 👈 livello di sfocatura
+        transform: scale(1.1); // evita bordi visibili
+        z-index: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+
+
+}
+
+.center-content {
+    flex: 1;
+    /* occupa lo spazio rimanente */
+    display: flex;
+    justify-content: center;
+    /* centra orizzontalmente */
+    align-items: center;
+    /* centra verticalmente */
+}
+
+.ion-card-content{
+    h1{
+        text-align: center;
+        font-family: Merriweather,Inter;
+        font-weight: 400;
+        font-size: 25px;
+    }
+}
