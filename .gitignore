@@ -1,0 +1,34 @@
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+*~
+
+# Node (se installi tool in futuro)
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Build / Cache
+.cache/
+dist/
+build/
+
+# Environment variables (se usi in futuro)
+.env
+.env.local
+
+# Vercel
+.vercel
+
+# Backup files
+*.bak
+*.tmp
+*.log
