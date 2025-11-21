@@ -137,18 +137,29 @@ function startExperience() {
     startExperienceBtn.style.display = 'none';
   }
 
-  // Cattura posizione e rotazione camera corrente
-  const cameraEl = camera.object3D;
-  const cameraPosition = cameraEl.position.clone();
-  const cameraRotation = cameraEl.rotation.clone();
+  // In AR.js marker-based, il marker ha la matrice di trasformazione corretta
+  // La camera resta a (0,0,0) mentre il marker si muove nello spazio 3D
+  // Per ancorare oggetti nello spazio, usiamo la posizione del marker come riferimento
 
-  console.log('📍 Posizione camera:', cameraPosition);
-  console.log('🧭 Rotazione camera:', cameraRotation);
+  const markerObject = marker.object3D;
 
-  // Posiziona worldAnchor alla posizione camera
-  // Questo crea un "anchor" fisso nello spazio da cui partono gli oggetti
-  worldAnchor.object3D.position.copy(cameraPosition);
-  worldAnchor.object3D.rotation.copy(cameraRotation);
+  // Ottieni la matrice mondo del marker
+  markerObject.updateMatrixWorld(true);
+
+  // Copia la matrice mondo del marker al worldAnchor
+  // Questo posiziona il worldAnchor esattamente dove si trova il marker nello spazio
+  worldAnchor.object3D.matrix.copy(markerObject.matrixWorld);
+  worldAnchor.object3D.matrix.decompose(
+    worldAnchor.object3D.position,
+    worldAnchor.object3D.quaternion,
+    worldAnchor.object3D.scale
+  );
+
+  console.log('📍 Posizione marker (world):', markerObject.getWorldPosition(new THREE.Vector3()));
+  console.log('🧭 Rotazione marker (world):', markerObject.getWorldQuaternion(new THREE.Quaternion()));
+
+  // Reset scala worldAnchor a 1 (la scala del marker potrebbe essere diversa)
+  worldAnchor.object3D.scale.set(1, 1, 1);
 
   // Carica posizioni salvate (se esistono)
   loadSavedPositions();
@@ -156,7 +167,7 @@ function startExperience() {
   // Mostra oggetti 3D
   worldAnchor.setAttribute('visible', true);
 
-  console.log('✅ Oggetti 3D posizionati nello spazio');
+  console.log('✅ Oggetti 3D ancorati alla posizione del marker');
   console.log('🏛️ Biblioteca SX:', bibliotecaSx.getAttribute('position'));
   console.log('🏛️ Biblioteca Centro:', bibliotecaCentro.getAttribute('position'));
   console.log('🏛️ Piani DX:', pianiDx.getAttribute('position'));

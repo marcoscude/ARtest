@@ -215,9 +215,6 @@
     >
       <!-- Assets con timeout per caricamento -->
       <a-assets timeout="30000">
-        <!-- PNG Markernote1 - precaricato -->
-        <img id="markernote1" src="./assets/Markernote1.png" crossorigin="anonymous" />
-
         <!-- Modelli 3D Biblioteche - tutti in scala 1:1 -->
         <a-asset-item id="model-biblioteca-sx" src="./assets/2.3_Biblioteca.glb"></a-asset-item>
         <a-asset-item id="model-biblioteca-centro" src="./assets/2.4_BibliotecaParma_2.glb"></a-asset-item>
@@ -236,15 +233,16 @@
         smoothThreshold="2"
       >
         <!-- PNG Markernote1 - Ancorato al marker, visibile quando trovato -->
-        <a-image
+        <a-plane
           id="markerNote"
-          src="#markernote1"
-          position="0 0.01 0"
+          src="./assets/Markernote1.png"
+          position="0 0.5 0"
           rotation="-90 0 0"
-          width="0.8"
-          height="1"
+          width="1"
+          height="1.25"
+          material="shader: flat; side: double; transparent: true; alphaTest: 0.5"
           visible="false"
-        ></a-image>
+        ></a-plane>
       </a-marker>
 
       <!-- Camera AR (senza look-controls per AR) -->
