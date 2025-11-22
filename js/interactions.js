@@ -62,6 +62,12 @@ function setupMarkerListeners() {
     console.log('✅ Marker rilevato!');
     markerFound = true;
 
+    // Se esperienza già avviata, non mostrare nulla (solo log)
+    if (experienceStarted) {
+      console.log('ℹ️ Marker ritrovato ma esperienza già avviata');
+      return;
+    }
+
     // Aggiorna UI
     if (loadingMessage) {
       loadingMessage.textContent = 'Marker trovato!';
@@ -71,14 +77,15 @@ function setupMarkerListeners() {
       }, 2000);
     }
 
-    // Mostra PNG Markernote1 sul marker
+    // Mostra PNG Markernote1 sul marker (solo se esperienza NON avviata)
     if (markerNote) {
       markerNote.setAttribute('visible', true);
+      markerNote.object3D.visible = true;
       console.log('📄 PNG Markernote1 visualizzato');
     }
 
-    // Mostra bottone "Avvia esperienza" (solo se non già avviata)
-    if (!experienceStarted && startExperienceBtn) {
+    // Mostra bottone "Avvia esperienza"
+    if (startExperienceBtn) {
       startExperienceBtn.style.display = 'block';
       console.log('🔴 Bottone "Avvia esperienza" attivo');
     }
@@ -129,9 +136,10 @@ function startExperience() {
   console.log('🎬 Avvio esperienza AR...');
   experienceStarted = true;
 
-  // Nascondi PNG e bottone
+  // Nascondi PNG completamente (rimuovi dal marker per evitare conflitti)
   if (markerNote) {
     markerNote.setAttribute('visible', false);
+    markerNote.object3D.visible = false; // Forza anche a livello Three.js
   }
   if (startExperienceBtn) {
     startExperienceBtn.style.display = 'none';
@@ -146,8 +154,10 @@ function startExperience() {
   // Ottieni la matrice mondo del marker
   markerObject.updateMatrixWorld(true);
 
+  // IMPORTANTE: Disabilita matrixAutoUpdate per evitare che A-Frame sovrascriva la posizione
+  worldAnchor.object3D.matrixAutoUpdate = false;
+
   // Copia la matrice mondo del marker al worldAnchor
-  // Questo posiziona il worldAnchor esattamente dove si trova il marker nello spazio
   worldAnchor.object3D.matrix.copy(markerObject.matrixWorld);
   worldAnchor.object3D.matrix.decompose(
     worldAnchor.object3D.position,
@@ -161,13 +171,19 @@ function startExperience() {
   // Reset scala worldAnchor a 1 (la scala del marker potrebbe essere diversa)
   worldAnchor.object3D.scale.set(1, 1, 1);
 
+  // Forza aggiornamento della matrice manualmente
+  worldAnchor.object3D.updateMatrix();
+  worldAnchor.object3D.updateMatrixWorld(true);
+
   // Carica posizioni salvate (se esistono)
   loadSavedPositions();
 
   // Mostra oggetti 3D
+  worldAnchor.object3D.visible = true;
   worldAnchor.setAttribute('visible', true);
 
   console.log('✅ Oggetti 3D ancorati alla posizione del marker');
+  console.log('🔒 matrixAutoUpdate disabilitato - oggetti fissi nello spazio');
   console.log('🏛️ Biblioteca SX:', bibliotecaSx.getAttribute('position'));
   console.log('🏛️ Biblioteca Centro:', bibliotecaCentro.getAttribute('position'));
   console.log('🏛️ Piani DX:', pianiDx.getAttribute('position'));
