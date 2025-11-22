@@ -1,6 +1,6 @@
 // =============================================================================
 // ARBIBLIO - REALTÀ AUMENTATA BIBLIOTECA PARMA
-// Sistema camera-relative per posizionamento oggetti 3D nello spazio
+// Sistema world-anchored per oggetti 3D ancorati allo spazio reale
 // =============================================================================
 
 console.log('🚀 ARbiblio inizializzato');
@@ -8,11 +8,13 @@ console.log('🚀 ARbiblio inizializzato');
 // Stato applicazione
 let experienceStarted = false;
 let markerFound = false;
+let markerCurrentlyVisible = false; // Traccia se il marker è attualmente visibile
 
 // Elementi DOM
 let loadingMessage, startExperienceBtn, debugToggle, debugPanel;
 let marker, markerNote, camera, worldAnchor;
 let bibliotecaSx, bibliotecaCentro, pianiDx;
+let scene;
 
 // =============================================================================
 // INIZIALIZZAZIONE
@@ -27,6 +29,7 @@ window.addEventListener('load', () => {
   debugPanel = document.getElementById('debugPanel');
 
   // Elementi A-Frame
+  scene = document.querySelector('a-scene');
   marker = document.querySelector('#marker');
   markerNote = document.querySelector('#markerNote');
   camera = document.querySelector('#camera');
@@ -52,6 +55,9 @@ window.addEventListener('load', () => {
   setupButtonListeners();
   setupDebugPanel();
   checkDebugMode();
+
+  // Avvia il render loop per l'ancoraggio spaziale
+  setupRenderLoop();
 });
 
 // =============================================================================
@@ -61,10 +67,11 @@ function setupMarkerListeners() {
   marker.addEventListener('markerFound', () => {
     console.log('✅ Marker rilevato!');
     markerFound = true;
+    markerCurrentlyVisible = true;
 
-    // Se esperienza già avviata, non mostrare nulla (solo log)
+    // Se esperienza già avviata, aggiorna solo il flag di visibilità
     if (experienceStarted) {
-      console.log('ℹ️ Marker ritrovato ma esperienza già avviata');
+      console.log('ℹ️ Marker ritrovato - riprendo tracking');
       return;
     }
 
@@ -94,6 +101,7 @@ function setupMarkerListeners() {
   marker.addEventListener('markerLost', () => {
     console.log('⚠️ Marker perso');
     markerFound = false;
+    markerCurrentlyVisible = false;
 
     if (!experienceStarted) {
       // Se esperienza non ancora avviata, nascondi tutto
@@ -111,7 +119,8 @@ function setupMarkerListeners() {
         startExperienceBtn.style.display = 'none';
       }
     }
-    // Se esperienza già avviata, gli oggetti restano fissi nello spazio
+    // Se esperienza già avviata, gli oggetti restano nell'ultima posizione nota
+    console.log('🔒 Oggetti congelati nell\'ultima posizione');
   });
 }
 
@@ -136,44 +145,14 @@ function startExperience() {
   console.log('🎬 Avvio esperienza AR...');
   experienceStarted = true;
 
-  // Nascondi PNG completamente (rimuovi dal marker per evitare conflitti)
+  // Nascondi PNG completamente
   if (markerNote) {
     markerNote.setAttribute('visible', false);
-    markerNote.object3D.visible = false; // Forza anche a livello Three.js
+    markerNote.object3D.visible = false;
   }
   if (startExperienceBtn) {
     startExperienceBtn.style.display = 'none';
   }
-
-  // In AR.js marker-based, il marker ha la matrice di trasformazione corretta
-  // La camera resta a (0,0,0) mentre il marker si muove nello spazio 3D
-  // Per ancorare oggetti nello spazio, usiamo la posizione del marker come riferimento
-
-  const markerObject = marker.object3D;
-
-  // Ottieni la matrice mondo del marker
-  markerObject.updateMatrixWorld(true);
-
-  // IMPORTANTE: Disabilita matrixAutoUpdate per evitare che A-Frame sovrascriva la posizione
-  worldAnchor.object3D.matrixAutoUpdate = false;
-
-  // Copia la matrice mondo del marker al worldAnchor
-  worldAnchor.object3D.matrix.copy(markerObject.matrixWorld);
-  worldAnchor.object3D.matrix.decompose(
-    worldAnchor.object3D.position,
-    worldAnchor.object3D.quaternion,
-    worldAnchor.object3D.scale
-  );
-
-  console.log('📍 Posizione marker (world):', markerObject.getWorldPosition(new THREE.Vector3()));
-  console.log('🧭 Rotazione marker (world):', markerObject.getWorldQuaternion(new THREE.Quaternion()));
-
-  // Reset scala worldAnchor a 1 (la scala del marker potrebbe essere diversa)
-  worldAnchor.object3D.scale.set(1, 1, 1);
-
-  // Forza aggiornamento della matrice manualmente
-  worldAnchor.object3D.updateMatrix();
-  worldAnchor.object3D.updateMatrixWorld(true);
 
   // Carica posizioni salvate (se esistono)
   loadSavedPositions();
@@ -182,8 +161,8 @@ function startExperience() {
   worldAnchor.object3D.visible = true;
   worldAnchor.setAttribute('visible', true);
 
-  console.log('✅ Oggetti 3D ancorati alla posizione del marker');
-  console.log('🔒 matrixAutoUpdate disabilitato - oggetti fissi nello spazio');
+  console.log('✅ Esperienza AR avviata');
+  console.log('📍 Gli oggetti seguiranno il marker mentre è visibile');
   console.log('🏛️ Biblioteca SX:', bibliotecaSx.getAttribute('position'));
   console.log('🏛️ Biblioteca Centro:', bibliotecaCentro.getAttribute('position'));
   console.log('🏛️ Piani DX:', pianiDx.getAttribute('position'));
@@ -194,6 +173,52 @@ function startExperience() {
       debugToggle.style.display = 'block';
     }
   }, 2000);
+}
+
+// =============================================================================
+// RENDER LOOP - ANCORAGGIO SPAZIALE CONTINUO
+// =============================================================================
+function setupRenderLoop() {
+  // Questo loop aggiorna la posizione del worldAnchor per seguire il marker
+  // Quando il marker è visibile: gli oggetti seguono il marker (ancorati allo spazio reale)
+  // Quando il marker è perso: gli oggetti restano nell'ultima posizione
+
+  scene.addEventListener('renderstart', () => {
+    console.log('🎬 Render loop avviato');
+  });
+
+  // Usa il tick del renderer per aggiornare ogni frame
+  const renderer = scene.renderer;
+  const clock = new THREE.Clock();
+
+  function updateWorldAnchor() {
+    if (experienceStarted && markerCurrentlyVisible && marker && worldAnchor) {
+      // Copia la trasformazione del marker al worldAnchor
+      const markerObj = marker.object3D;
+
+      // Aggiorna la matrice mondo del marker
+      markerObj.updateMatrixWorld(true);
+
+      // Copia posizione e rotazione dal marker
+      const worldPos = new THREE.Vector3();
+      const worldQuat = new THREE.Quaternion();
+      const worldScale = new THREE.Vector3();
+
+      markerObj.matrixWorld.decompose(worldPos, worldQuat, worldScale);
+
+      // Applica al worldAnchor
+      worldAnchor.object3D.position.copy(worldPos);
+      worldAnchor.object3D.quaternion.copy(worldQuat);
+      // Mantieni scala 1 per gli oggetti
+      worldAnchor.object3D.scale.set(1, 1, 1);
+    }
+
+    requestAnimationFrame(updateWorldAnchor);
+  }
+
+  // Avvia il loop
+  updateWorldAnchor();
+  console.log('🔄 World anchor update loop avviato');
 }
 
 // =============================================================================
