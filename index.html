@@ -167,11 +167,11 @@
       smoothTolerance="0.01"
       smoothThreshold="5"
     >
-      <!-- PNG Markernote - per marker VERTICALE (perpendicolare al pavimento) -->
+      <!-- PNG Markernote - inclinato sopra il marker -->
       <a-plane
         id="markerNote"
-        position="0 0 0.01"
-        rotation="0 0 0"
+        position="0 0.5 0"
+        rotation="-90 0 0"
         width="0.8"
         height="1"
         material="src: #markernote-img; transparent: true; alphaTest: 0.5; side: double;"
@@ -181,16 +181,16 @@
       <!-- Container GLB - appare dopo click -->
       <a-entity id="glbContainer" visible="false">
 
-        <!-- CENTRO - sul marker (ruotato per marker verticale) -->
+        <!-- CENTRO - sul marker -->
         <a-entity
           id="biblioteca-centro"
           class="clickable-glb"
           data-name="Biblioteca Palatina"
           data-desc="La Biblioteca Palatina di Parma, fondata nel 1761, conserva oltre 700.000 volumi e manoscritti preziosi."
           gltf-model="#model-biblioteca-centro"
-          position="0 0 0.5"
+          position="0 0.2 0"
           scale="1.5 1.5 1.5"
-          rotation="-90 0 0"
+          rotation="0 0 0"
         ></a-entity>
 
         <!-- SINISTRA - 50cm a sinistra del marker -->
@@ -200,9 +200,9 @@
           data-name="Archivio di Stato"
           data-desc="L'Archivio di Stato di Parma custodisce documenti storici dal IX secolo ad oggi."
           gltf-model="#model-biblioteca-sx"
-          position="-0.5 0 0.5"
+          position="-0.5 0.2 0"
           scale="1.5 1.5 1.5"
-          rotation="-90 0 0"
+          rotation="0 0 0"
         ></a-entity>
 
         <!-- DESTRA - 50cm a destra del marker -->
@@ -212,21 +212,16 @@
           data-name="Museo Bodoniano"
           data-desc="Il Museo Bodoniano espone i caratteri tipografici e le opere di Giambattista Bodoni."
           gltf-model="#model-piani-dx"
-          position="0.5 0 0.5"
+          position="0.5 0.2 0"
           scale="1.5 1.5 1.5"
-          rotation="-90 0 0"
+          rotation="0 0 0"
         ></a-entity>
 
       </a-entity>
     </a-marker>
 
-    <!-- Camera con raycaster per click -->
-    <a-entity camera>
-      <a-entity
-        cursor="fuse: false; rayOrigin: mouse;"
-        raycaster="objects: .clickable-glb; far: 100;"
-      ></a-entity>
-    </a-entity>
+    <!-- Camera semplice -->
+    <a-entity camera></a-entity>
   </a-scene>
 
   <script>
@@ -317,29 +312,98 @@
     });
 
     // =============================================================
-    // FASE 4 - CLICK SU GLB
+    // FASE 4 - CLICK SU GLB (Touch-based raycasting)
     // =============================================================
-    document.querySelectorAll('.clickable-glb').forEach(glb => {
-      glb.addEventListener('click', (e) => {
-        console.log('🖱️ Click su:', glb.id);
+    const scene = document.querySelector('a-scene');
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
+    let camera3D = null;
 
-        const name = glb.getAttribute('data-name');
-        const desc = glb.getAttribute('data-desc');
-
-        // Mostra modal
-        modalTitle.textContent = name;
-        modalDescription.textContent = desc;
-        glbModal.classList.add('active');
-      });
+    // Aspetta che la scena sia pronta
+    scene.addEventListener('loaded', () => {
+      camera3D = scene.camera;
+      console.log('📷 Camera 3D pronta per raycasting');
     });
 
+    // Funzione per gestire touch/click
+    function handleTouch(event) {
+      if (!experienceStarted || !camera3D) return;
+
+      event.preventDefault();
+
+      // Ottieni coordinate touch/click
+      let clientX, clientY;
+      if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      } else {
+        clientX = event.clientX;
+        clientY = event.clientY;
+      }
+
+      // Converti in coordinate normalizzate (-1 a 1)
+      mouse.x = (clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+      // Aggiorna raycaster
+      raycaster.setFromCamera(mouse, camera3D);
+
+      // Trova oggetti cliccabili
+      const clickables = [];
+      document.querySelectorAll('.clickable-glb').forEach(el => {
+        if (el.object3D) {
+          el.object3D.traverse(child => {
+            if (child.isMesh) {
+              child.userData.aframeEl = el;
+              clickables.push(child);
+            }
+          });
+        }
+      });
+
+      // Test intersezione
+      const intersects = raycaster.intersectObjects(clickables, true);
+
+      if (intersects.length > 0) {
+        // Trova l'elemento A-Frame associato
+        let hitObject = intersects[0].object;
+        while (hitObject && !hitObject.userData.aframeEl) {
+          hitObject = hitObject.parent;
+        }
+
+        if (hitObject && hitObject.userData.aframeEl) {
+          const el = hitObject.userData.aframeEl;
+          const name = el.getAttribute('data-name');
+          const desc = el.getAttribute('data-desc');
+
+          console.log('🖱️ Click su:', el.id, name);
+
+          // Mostra modal
+          modalTitle.textContent = name;
+          modalDescription.textContent = desc;
+          glbModal.classList.add('active');
+        }
+      }
+    }
+
+    // Event listeners per touch e click
+    document.addEventListener('touchstart', handleTouch, { passive: false });
+    document.addEventListener('click', handleTouch);
+
     // Chiudi modal
-    closeModal.addEventListener('click', () => {
+    closeModal.addEventListener('click', (e) => {
+      e.stopPropagation();
       glbModal.classList.remove('active');
     });
 
-    // Chiudi modal toccando fuori
+    // Chiudi modal toccando fuori (sul modal stesso)
     glbModal.addEventListener('click', (e) => {
+      if (e.target === glbModal) {
+        glbModal.classList.remove('active');
+      }
+    });
+
+    glbModal.addEventListener('touchstart', (e) => {
       if (e.target === glbModal) {
         glbModal.classList.remove('active');
       }
