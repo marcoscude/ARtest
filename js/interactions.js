@@ -1,6 +1,6 @@
 // =============================================================================
 // ARBIBLIO - REALTÀ AUMENTATA BIBLIOTECA PARMA
-// Sistema world-anchored per oggetti 3D ancorati allo spazio reale
+// Sistema camera-relative: oggetti ancorati allo spazio dell'utente
 // =============================================================================
 
 console.log('🚀 ARbiblio inizializzato');
@@ -8,7 +8,6 @@ console.log('🚀 ARbiblio inizializzato');
 // Stato applicazione
 let experienceStarted = false;
 let markerFound = false;
-let markerCurrentlyVisible = false; // Traccia se il marker è attualmente visibile
 
 // Elementi DOM
 let loadingMessage, startExperienceBtn, debugToggle, debugPanel;
@@ -55,9 +54,6 @@ window.addEventListener('load', () => {
   setupButtonListeners();
   setupDebugPanel();
   checkDebugMode();
-
-  // Avvia il render loop per l'ancoraggio spaziale
-  setupRenderLoop();
 });
 
 // =============================================================================
@@ -67,11 +63,10 @@ function setupMarkerListeners() {
   marker.addEventListener('markerFound', () => {
     console.log('✅ Marker rilevato!');
     markerFound = true;
-    markerCurrentlyVisible = true;
 
-    // Se esperienza già avviata, aggiorna solo il flag di visibilità
+    // Se esperienza già avviata, ignora il marker
     if (experienceStarted) {
-      console.log('ℹ️ Marker ritrovato - riprendo tracking');
+      console.log('ℹ️ Marker ignorato - esperienza già avviata');
       return;
     }
 
@@ -84,7 +79,7 @@ function setupMarkerListeners() {
       }, 2000);
     }
 
-    // Mostra PNG Markernote1 sul marker (solo se esperienza NON avviata)
+    // Mostra PNG Markernote1 sul marker
     if (markerNote) {
       markerNote.setAttribute('visible', true);
       markerNote.object3D.visible = true;
@@ -101,7 +96,6 @@ function setupMarkerListeners() {
   marker.addEventListener('markerLost', () => {
     console.log('⚠️ Marker perso');
     markerFound = false;
-    markerCurrentlyVisible = false;
 
     if (!experienceStarted) {
       // Se esperienza non ancora avviata, nascondi tutto
@@ -113,14 +107,14 @@ function setupMarkerListeners() {
 
       if (markerNote) {
         markerNote.setAttribute('visible', false);
+        markerNote.object3D.visible = false;
       }
 
       if (startExperienceBtn) {
         startExperienceBtn.style.display = 'none';
       }
     }
-    // Se esperienza già avviata, gli oggetti restano nell'ultima posizione nota
-    console.log('🔒 Oggetti congelati nell\'ultima posizione');
+    // Se esperienza già avviata, il marker non serve più
   });
 }
 
@@ -145,7 +139,7 @@ function startExperience() {
   console.log('🎬 Avvio esperienza AR...');
   experienceStarted = true;
 
-  // Nascondi PNG completamente
+  // Nascondi PNG e bottone
   if (markerNote) {
     markerNote.setAttribute('visible', false);
     markerNote.object3D.visible = false;
@@ -153,6 +147,21 @@ function startExperience() {
   if (startExperienceBtn) {
     startExperienceBtn.style.display = 'none';
   }
+
+  // ==========================================================================
+  // POSIZIONAMENTO OGGETTI DAVANTI ALL'UTENTE (CAMERA-RELATIVE)
+  // ==========================================================================
+  // Il marker ha servito solo come "chiave" per attivare l'esperienza
+  // Ora posizioniamo gli oggetti DAVANTI alla camera dell'utente
+  // Gli oggetti saranno fissi nello spazio 3D della scena
+
+  // In AR.js la camera è a (0,0,0) e guarda verso -Z
+  // Posizioniamo gli oggetti davanti alla camera
+
+  // Reset worldAnchor a posizione fissa davanti alla camera
+  worldAnchor.object3D.position.set(0, 0, 0);
+  worldAnchor.object3D.rotation.set(0, 0, 0);
+  worldAnchor.object3D.scale.set(1, 1, 1);
 
   // Carica posizioni salvate (se esistono)
   loadSavedPositions();
@@ -162,63 +171,13 @@ function startExperience() {
   worldAnchor.setAttribute('visible', true);
 
   console.log('✅ Esperienza AR avviata');
-  console.log('📍 Gli oggetti seguiranno il marker mentre è visibile');
-  console.log('🏛️ Biblioteca SX:', bibliotecaSx.getAttribute('position'));
-  console.log('🏛️ Biblioteca Centro:', bibliotecaCentro.getAttribute('position'));
-  console.log('🏛️ Piani DX:', pianiDx.getAttribute('position'));
+  console.log('📍 Oggetti posizionati davanti alla camera');
+  console.log('🔒 Gli oggetti sono ora indipendenti dal marker');
 
-  // Mostra toggle debug dopo 2 secondi
-  setTimeout(() => {
-    if (debugToggle) {
-      debugToggle.style.display = 'block';
-    }
-  }, 2000);
-}
-
-// =============================================================================
-// RENDER LOOP - ANCORAGGIO SPAZIALE CONTINUO
-// =============================================================================
-function setupRenderLoop() {
-  // Questo loop aggiorna la posizione del worldAnchor per seguire il marker
-  // Quando il marker è visibile: gli oggetti seguono il marker (ancorati allo spazio reale)
-  // Quando il marker è perso: gli oggetti restano nell'ultima posizione
-
-  scene.addEventListener('renderstart', () => {
-    console.log('🎬 Render loop avviato');
-  });
-
-  // Usa il tick del renderer per aggiornare ogni frame
-  const renderer = scene.renderer;
-  const clock = new THREE.Clock();
-
-  function updateWorldAnchor() {
-    if (experienceStarted && markerCurrentlyVisible && marker && worldAnchor) {
-      // Copia la trasformazione del marker al worldAnchor
-      const markerObj = marker.object3D;
-
-      // Aggiorna la matrice mondo del marker
-      markerObj.updateMatrixWorld(true);
-
-      // Copia posizione e rotazione dal marker
-      const worldPos = new THREE.Vector3();
-      const worldQuat = new THREE.Quaternion();
-      const worldScale = new THREE.Vector3();
-
-      markerObj.matrixWorld.decompose(worldPos, worldQuat, worldScale);
-
-      // Applica al worldAnchor
-      worldAnchor.object3D.position.copy(worldPos);
-      worldAnchor.object3D.quaternion.copy(worldQuat);
-      // Mantieni scala 1 per gli oggetti
-      worldAnchor.object3D.scale.set(1, 1, 1);
-    }
-
-    requestAnimationFrame(updateWorldAnchor);
+  // Mostra toggle debug subito
+  if (debugToggle) {
+    debugToggle.style.display = 'block';
   }
-
-  // Avvia il loop
-  updateWorldAnchor();
-  console.log('🔄 World anchor update loop avviato');
 }
 
 // =============================================================================
